@@ -1,6 +1,6 @@
 # Consistent Hashing Lab
 
-A simple implementation of consistent hashing in Go, demonstrating hash rings, virtual nodes, server membership changes, and key redistribution.
+A simple implementation of consistent hashing in Go, demonstrating hash rings, virtual nodes and key redistribution.
 
 ## Overview
 
@@ -21,19 +21,17 @@ Changing the number of servers can remap many keys. Consistent hashing places se
 - Empty-ring and duplicate-server handling
 - Unit tests for core behavior
 - Comparison of modulo hashing and consistent hashing
-- Key-movement experiments
 
 ## Requirements
 
-- Go installed on your machine
-- Git (optional, for version control)
+- Go 
 
 ## Getting Started
 
 Clone the repository:
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/consistent-hashing-lab.git
+git clone https://github.com/praveshdev3/consistent-hashing-lab.git
 cd consistent-hashing-lab
 ```
 
@@ -48,8 +46,6 @@ Run the demonstration:
 ```bash
 go run .
 ```
-
-Replace `YOUR_USERNAME` with your GitHub username after publishing the repository.
 
 ## How It Works
 
@@ -78,22 +74,14 @@ The project compares key movement when a server is added using:
 
 It also tests the removal of a server and checks that keys are no longer assigned to that server.
 
-Run the experiment with:
-
-```bash
-go run .
-```
-
-Record your actual results here after running the program:
-
 | Metric | Result |
 |---|---|
-| Number of keys tested | 10,000 |
+| Number of keys tested | 100,000 |
 | Initial servers | 3 |
 | Final servers | 4 |
 | Virtual nodes per server | 100 |
-| Modulo hashing movement | Add your measured result |
-| Consistent hashing movement | Add your measured result |
+| Modulo hashing movement | 75137 (75.14%) |
+| Consistent hashing movement | 28658 (28.66%) |
 
 ## Project Structure
 
@@ -138,7 +126,3 @@ This is an educational implementation, not a production-ready distributed storag
 - Compare key distribution across multiple configurations
 - Add concurrency support
 - Improve atomicity of server membership changes
-
-## License
-
-Choose a license appropriate for your project before publishing. For example, the MIT License is a common option for open-source learning projects.
