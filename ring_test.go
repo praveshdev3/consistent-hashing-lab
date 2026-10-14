@@ -1,9 +1,12 @@
 package main
 
-import "testing"
+import (
+	"fmt"
+	"testing"
+)
 
 func TestEmptyRing(t *testing.T) {
-	ring := NewHashRing()
+	ring := NewHashRing(10)
 
 	_, err := ring.GetNode("user:123")
 	if err == nil {
@@ -12,7 +15,7 @@ func TestEmptyRing(t *testing.T) {
 }
 
 func TestSingleServer(t *testing.T) {
-	ring := NewHashRing()
+	ring := NewHashRing(10)
 
 	if err := ring.AddNode("server-A"); err != nil {
 		t.Fatal(err)
@@ -35,7 +38,7 @@ func TestSingleServer(t *testing.T) {
 }
 
 func TestDeterministicLookup(t *testing.T) {
-	ring := NewHashRing()
+	ring := NewHashRing(10)
 
 	for _, server := range []string{
 		"server-A",
@@ -64,7 +67,7 @@ func TestDeterministicLookup(t *testing.T) {
 }
 
 func TestDuplicateServer(t *testing.T) {
-	ring := NewHashRing()
+	ring := NewHashRing(10)
 
 	if err := ring.AddNode("server-A"); err != nil {
 		t.Fatal(err)
@@ -83,5 +86,64 @@ func TestDuplicateServer(t *testing.T) {
 		if server != "server-A" {
 			t.Fatalf("expected server-A, got %s", server)
 		}
+	}
+}
+
+func TestRemoveNode(t *testing.T) {
+	ring := NewHashRing(10)
+
+	for _, server := range []string{
+		"server-A",
+		"server-B",
+		"server-C",
+	} {
+		if err := ring.AddNode(server); err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	if err := ring.RemoveNode("server-B"); err != nil {
+		t.Fatal(err)
+	}
+
+	for i := 0; i < 1000; i++ {
+		key := fmt.Sprintf("user:%d", i)
+
+		server, err := ring.GetNode(key)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if server == "server-B" {
+			t.Fatalf("key %s assigned to removed server", key)
+		}
+	}
+}
+
+func TestRemoveLastNode(t *testing.T) {
+	ring := NewHashRing(10)
+
+	if err := ring.AddNode("server-A"); err != nil {
+		t.Fatal(err)
+	}
+
+	if err := ring.RemoveNode("server-A"); err != nil {
+		t.Fatal(err)
+	}
+
+	if _, err := ring.GetNode("user:1"); err == nil {
+		t.Fatal("expected an error when looking up a key in an empty ring")
+	}
+}
+
+func TestRemoveUnknownServer(t *testing.T) {
+	ring := NewHashRing(10)
+
+	if err := ring.AddNode("server-A"); err != nil {
+		t.Fatal(err)
+	}
+
+	if err := ring.RemoveNode("server-Z"); err == nil {
+		t.Fatal("expected an error when removing an unknown server")
 	}
 }
